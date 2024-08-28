@@ -1,4 +1,3 @@
-import json
 
 def crc16_valid(data : bytes) -> bool:
     # Data Field Length	
@@ -81,7 +80,6 @@ class Codec8ExtendedParser:
         
         self.dequeue_bytes(1) #self.parsed['number_of_data_2'] = int(self.dequeue_bytes(1), 16)
         self.dequeue_bytes(4) # self.parsed['crc_16'] = self.dequeue_bytes(4)
-        print(json.dumps(self.parsed))
         
     def dequeue_bytes(self, bytes : int):
         data = self.data[self.byte_index * 2 : self.byte_index * 2 + bytes * 2]
@@ -156,7 +154,6 @@ class Codec8Parser:
         
         self.dequeue_bytes(1) #self.parsed['number_of_data_2'] = int(self.dequeue_bytes(1), 16)
         self.dequeue_bytes(4) # self.parsed['crc_16'] = self.dequeue_bytes(4)
-        print(json.dumps(self.parsed))
         
     def dequeue_bytes(self, bytes : int):
         data = self.data[self.byte_index * 2 : self.byte_index * 2 + bytes * 2]
@@ -187,5 +184,5 @@ if __name__ == '__main__':
     data = b'000000000000004A8E010000016B412CEE000100000000000000000000000000000000010005000100010100010011001D00010010015E2C880002000B000000003544C87A000E000000001DD7E06A00000100002994'
     # Codec 8 Data
     #data = b'000000000000011f0804000001919970d3d00015bf987e15e1316701210033120000ef0e05ef01f0001504c800450107b50008b60006426249430f97440051190bce56005002f100006fb910026024f300000001919970e7580015bf987e15e1316701210033120000ef0e05ef00f0001504c800450107b50008b60006421afe430f8244002a190bce56005002f100006fb910026024f300000001919970ef280015bf987e15e1316701210033120000ef0e05ef01f0011504c800450107b50008b600064265d4430fac44006f190bce56005002f100006fb910026024f300000001919970f3100015bf987e15e1316701210033120000f00e05ef01f0011504c800450107b50008b600064265d4430fac44006f190bce56005002f100006fb910026024f30004000095a2'
-    parse_codec(data)
+    print(parse_codec(data))
     
