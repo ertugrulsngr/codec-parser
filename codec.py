@@ -61,19 +61,19 @@ class Codec8ExtendedParser:
             avl_record['satellites'] = float.fromhex(self.dequeue_bytes(1))
             avl_record['speed'] = float.fromhex(self.dequeue_bytes(2))
             
-            avl_record['event_io_id'] = self.dequeue_bytes(2)
+            avl_record['event_io_id'] = int(self.dequeue_bytes(2), 16)
             avl_record['number_of_total_id'] = int(self.dequeue_bytes(2), 16)
             
-            avl_record['elements'] = []
-            avl_record['elements'].append(self.parse_n_byte_elements(1))
-            avl_record['elements'].append(self.parse_n_byte_elements(2))
-            avl_record['elements'].append(self.parse_n_byte_elements(4))
-            avl_record['elements'].append(self.parse_n_byte_elements(8))
+            avl_record['elements'] = [] 
+            avl_record['elements'] += self.parse_n_byte_elements(1)
+            avl_record['elements'] += self.parse_n_byte_elements(2)
+            avl_record['elements'] += self.parse_n_byte_elements(4)
+            avl_record['elements'] += self.parse_n_byte_elements(8)
             
             number_of_x_byte_elements = int(self.dequeue_bytes(2), 16)
             
             for __ in range(number_of_x_byte_elements):
-                avl_record['elements'].append(self.parse_x_byte_element())
+                avl_record['elements'] += self.parse_x_byte_element()
             
             self.parsed['avl_records'].append(avl_record)
         
@@ -91,14 +91,14 @@ class Codec8ExtendedParser:
         elements = []
         for _ in range(number_of_elements):
             elements.append({
-                'io_id': self.dequeue_bytes(2),
+                'io_id': int(self.dequeue_bytes(2), 16),
                 'io_value': self.dequeue_bytes(n)
             })
         return elements
     
     def parse_x_byte_element(self):
-        io_id = self.dequeue_bytes(2)
-        io_length = self.dequeue_bytes(2)
+        io_id = int(self.dequeue_bytes(2), 16)
+        io_length = int(self.dequeue_bytes(2), 16)
         io_value = self.dequeue_bytes(io_length)
         return {'io_id': io_id, 'io_length': io_length, 'io_value': io_value}
 
@@ -139,20 +139,21 @@ class Codec8Parser:
             avl_record['satellites'] = float.fromhex(self.dequeue_bytes(1))
             avl_record['speed'] = float.fromhex(self.dequeue_bytes(2))
             
-            avl_record['event_io_id'] = self.dequeue_bytes(1)
+            avl_record['event_io_id'] = int(self.dequeue_bytes(1), 16)
             avl_record['number_of_total_id'] = int(self.dequeue_bytes(1), 16)
             
             avl_record['elements'] = [] 
-            avl_record['elements'].append((self.parse_n_byte_elements(1)))
-            avl_record['elements'].append((self.parse_n_byte_elements(2)))
-            avl_record['elements'].append((self.parse_n_byte_elements(4)))
-            avl_record['elements'].append((self.parse_n_byte_elements(8)))
+            avl_record['elements'] += self.parse_n_byte_elements(1)
+            avl_record['elements'] += self.parse_n_byte_elements(2)
+            avl_record['elements'] += self.parse_n_byte_elements(4)
+            avl_record['elements'] += self.parse_n_byte_elements(8)
             
             
             self.parsed['avl_records'].append(avl_record)
         
-        
+        # Dequeue Number Of Data 2
         self.dequeue_bytes(1) #self.parsed['number_of_data_2'] = int(self.dequeue_bytes(1), 16)
+        # Deuque CRC 16
         self.dequeue_bytes(4) # self.parsed['crc_16'] = self.dequeue_bytes(4)
         
     def dequeue_bytes(self, bytes : int):
@@ -165,12 +166,12 @@ class Codec8Parser:
         elements = []
         for i in range(number_of_elements):
             elements.append({
-                'io_id': self.dequeue_bytes(1),
+                'io_id': int(self.dequeue_bytes(1), 16),
                 'io_value': self.dequeue_bytes(n)
             })
         return elements
 
-def parse_codec(data : bytes):
+def parse_codec(data : bytes) -> dict:
     codec_id = get_codec_id(data)
     if int(codec_id, 16) == int(Codec8ExtendedParser.CODEC_ID, 16):
         return Codec8ExtendedParser(data).parsed
@@ -178,11 +179,4 @@ def parse_codec(data : bytes):
         return Codec8Parser(data).parsed
     else:
         raise Exception("Codec ID is not valid")
-
-if __name__ == '__main__':
-    # Codec 8 Extended Data
-    data = b'000000000000004A8E010000016B412CEE000100000000000000000000000000000000010005000100010100010011001D00010010015E2C880002000B000000003544C87A000E000000001DD7E06A00000100002994'
-    # Codec 8 Data
-    #data = b'000000000000011f0804000001919970d3d00015bf987e15e1316701210033120000ef0e05ef01f0001504c800450107b50008b60006426249430f97440051190bce56005002f100006fb910026024f300000001919970e7580015bf987e15e1316701210033120000ef0e05ef00f0001504c800450107b50008b60006421afe430f8244002a190bce56005002f100006fb910026024f300000001919970ef280015bf987e15e1316701210033120000ef0e05ef01f0011504c800450107b50008b600064265d4430fac44006f190bce56005002f100006fb910026024f300000001919970f3100015bf987e15e1316701210033120000f00e05ef01f0011504c800450107b50008b600064265d4430fac44006f190bce56005002f100006fb910026024f30004000095a2'
-    print(parse_codec(data))
     
