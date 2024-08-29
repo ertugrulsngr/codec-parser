@@ -22,7 +22,7 @@ def crc16_valid(data : bytes) -> bool:
     else:
         return False
 
-def get_codec_id(data:bytes):
+def get_codec_id(data : bytes):
     return data[16:18].decode()
 
 class Codec8ExtendedParser:
@@ -58,7 +58,7 @@ class Codec8ExtendedParser:
             avl_record['latitude'] = float.fromhex(self.dequeue_bytes(4))
             avl_record['altitude'] = float.fromhex(self.dequeue_bytes(2))
             avl_record['angle'] = float.fromhex(self.dequeue_bytes(2))
-            avl_record['satellites'] = float.fromhex(self.dequeue_bytes(1))
+            avl_record['satellites'] = int(self.dequeue_bytes(1), 16)
             avl_record['speed'] = float.fromhex(self.dequeue_bytes(2))
             
             avl_record['event_io_id'] = int(self.dequeue_bytes(2), 16)
@@ -136,7 +136,7 @@ class Codec8Parser:
             avl_record['latitude'] = float.fromhex(self.dequeue_bytes(4))
             avl_record['altitude'] = float.fromhex(self.dequeue_bytes(2))
             avl_record['angle'] = float.fromhex(self.dequeue_bytes(2))
-            avl_record['satellites'] = float.fromhex(self.dequeue_bytes(1))
+            avl_record['satellites'] = int(self.dequeue_bytes(1), 16)
             avl_record['speed'] = float.fromhex(self.dequeue_bytes(2))
             
             avl_record['event_io_id'] = int(self.dequeue_bytes(1), 16)
