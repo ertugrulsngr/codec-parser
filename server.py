@@ -4,7 +4,7 @@ import codec
 from typing_extensions import Literal
 
 IMEI_RECIEVE_SIZE = 256
-CODEC_RECIEVE_SIZE = 1024
+CODEC_RECIEVE_SIZE = 1280
 
 class TeltonikaRequestHandler(socketserver.BaseRequestHandler):
     
